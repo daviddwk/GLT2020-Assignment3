@@ -4,49 +4,49 @@ module ccl::Syntax
  * Define concrete syntax for CCL. The language's specification is available in the PDF (Section 3)
  */
  
-lexical Id = ([a-zA-Z][a-zA-Z0-9_]* !>> [a-zA-Z0-9_]) \ Reserved;
+lexical Id = ([a-zA-Z0-9_] !<< [a-zA-Z][a-zA-Z0-9_]* !>> [a-zA-Z0-9_]);
 lexical Value = [1-9][0-9]* ;
+extend lang::std::Layout;
 
-layout LAYOUT = [\t-\n\r\ ]* !>> [\t-\n\r\ ] ;
-
-keyword Reserved = "resource" | Types | Specifications | Regions | Engines | OSes | Bool | Storages;
-
-keyword Bool = "yes" | "no";
-keyword Types = "storage" | "computing";
-keyword Specifications = "region" | "engine" | "CPU" | "memory" | "IPV6" | "storage";
-keyword Regions = "california" | "cape_town" | "frankfurt" | "bogota" | "seoul";
-keyword Engines = "mysql" | "postgresql" | "marinadb" | "oracle" | "sqlserver";
-keyword OSes = "linux" | "redhat" | "ubuntu" | "windows";
-keyword Storages = "bls" | "ssd";
+keyword Region = "California" | "CapeTown" | "Frankfurt" | "Bogota" | "Seoul";
+keyword Engine = "MySQL" | "PostgreSQL" | "MarinaDB" | "Oracle" | "SQLServer";
+keyword OS = "Linux" | "Redhat" | "Ubuntu" | "Windows";
+keyword Storage = "BLS" | "SSD";
 
 
 
 start syntax Program 
-	= program : (Resource ("," Resource)*) program
+	= Resources program
 	;
 
 syntax Resource 
-	= resource : "resource" Id rs_id "{"
-			(MI ("," MI)*) mis
-		"}"
+	= resource : "resource" Id id "{" MIs "}"
+	;
+syntax Resources
+	= Resource
+	| Resource "," Resources
 	;
 
 syntax MI
-	=	mi_store : "storage" Id mi_id "{"
-			(Specification ("," Specification)*) specs
-		"}"
-	| 	mi_compute : "computing" Id mi_id "{"
-			(Specification ("," Specification)*) specs
-		"}"
-	| 	mi_id : Id mi_id
+	= mi_store : "storage" Id id "{" Specs specs "}"
+	| mi_compute : "computing" Id id "{" Specs specs "}"
+	| mi_id : Id id
+	;	
+syntax MIs
+	= MI
+	| MI "," MIs
 	;
 	
-syntax Specification
-	= Region : "region" ":" Regions region
-	| Engine : "engine" ":" Engines engine
-	| OS : "OS" ":" OSes os
-	| CPU : "CPU" ":" Value core "cores"
-	| Memory : "memory" ":" Value gb_mem "GB"
-	| Storage : "storage" ":" Storages storage "of" Value gb_sto "GB"
-	| IPV6 : "IPV6" ":" Bool ipv6 
+syntax Spec
+	= Region : "region" ":" Region region
+	| Engine : "engine" ":" Engine engine
+	| OS : "OS" ":" OS os
+	| CPU : "CPU" ":" Value cores "cores"
+	| Memory : "memory" ":" [1-64] gb_mem "GB"
+	| Storage : "storage" ":" Storage "of" Value gb_sto "GB"
+	| IPV6 : "IPV6" ":" ("yes" | "no" ) ipv6 
+	;	
+syntax Specs
+	= Spec
+	| Spec "," Specs
 	;
