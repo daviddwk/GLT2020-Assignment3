@@ -6,9 +6,12 @@ module ccl::AST
  * - make sure there is an almost one-to-one correspondence with the grammar (Syntax.rsc)
  */
  
- data AbsProgram = absprogram(AbsResource resource);
- data AbsResource = absresource(int id, list[AbsMI] mis);
- data AbsMI = absmi(int id, list[AbsSpecification] specs);
+ data AbsProgram = absprogram(AbsResource re);
+ data AbsResource = absresource(str id, list[AbsMI] mis);
+ data AbsMI =  absstomi( str id, list[AbsSpecification] specs)
+ 	| abscommi( str id, list[AbsSpecification] specs)
+ 	| absidmi( str id)
+ 	;
  data AbsSpecification = absregion(str region)
  	| absengine(str engine)
  	| absos(str os)
