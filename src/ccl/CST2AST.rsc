@@ -17,9 +17,6 @@ public AbsProgram cst2ast(Program pr){
 	list[AbsMI] mis = [];
 	
 	visit(pr.resource.mis){
-	/*
-		case MI mi: mis += initMI(mi);
-	*/
 		case StorageMI mi: mis += initStoMI(mi);
 		case ComputeMI mi: mis += initComMI(mi);
 		case IdMI mi: mis += absidmi(unparse(mi));
