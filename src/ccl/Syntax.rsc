@@ -5,48 +5,40 @@ module ccl::Syntax
  */
  
 lexical Id = [a-zA-Z0-9_]+;
-lexical Value = [1-9][0-9]* | "0" ;
+lexical Value = [0-9]+ ;
 extend lang::std::Layout;
 
+keyword Reserved = Region | Engine | OS | Storage | IPV6 | Spec | Res | Mii;
 keyword Region = "California" | "CapeTown" | "Frankfurt" | "Bogota" | "Seoul";
 keyword Engine = "MySQL" | "PostgreSQL" | "MarinaDB" | "Oracle" | "SQLServer";
 keyword OS = "Linux" | "Redhat" | "Ubuntu" | "Windows";
 keyword Storage = "BLS" | "SSD";
-
+keyword IPV6 = "yes" | "no";
+keyword Spec = "region" | "engine" | "OS" | "CUP" | "memory" | "storage" | "IPV6";
+keyword Res = "resource";
+keyword Mii = "storage" | "computing";
 
 
 start syntax Program 
-	= Resources program
+	= "resource" Resource
 	;
 
 syntax Resource 
-	= resource : "resource" Id id "{" MIs "}"
-	;
-syntax Resources
-	= Resource
-	| Resource "," Resources
+	=  Id "{" MI ("," MI)* "}"
 	;
 
 syntax MI
-	= mi_store : "storage" Id id "{" Specs specs "}"
-	| mi_compute : "computing" Id id "{" Specs specs "}"
-	| mi_id : Id id
+	= Mii Id id "{" Specification ("," Specification)* specs "}"
+	| Id id
 	;	
-syntax MIs
-	= MI
-	| MI "," MIs
-	;
 	
-syntax Spec
+syntax Specification
 	= Region : "region" ":" Region region
 	| Engine : "engine" ":" Engine engine
 	| OS : "OS" ":" OS os
 	| CPU : "CPU" ":" Value cores "cores"
 	| Memory : "memory" ":" Value gb_mem "GB"
 	| Storage : "storage" ":" Storage "of" Value gb_sto "GB"
-	| IPV6 : "IPV6" ":" ("yes" | "no" ) ipv6 
+	| IPV6 : "IPV6" ":" IPV6 ipv6 
 	;	
-syntax Specs
-	= Spec
-	| Spec "," Specs
-	;
+
