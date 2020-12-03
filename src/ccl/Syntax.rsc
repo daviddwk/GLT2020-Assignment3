@@ -4,8 +4,8 @@ module ccl::Syntax
  * Define concrete syntax for CCL. The language's specification is available in the PDF (Section 3)
  */
  
-lexical Id = ([a-zA-Z0-9_] !<< [a-zA-Z][a-zA-Z0-9_]* !>> [a-zA-Z0-9_]);
-lexical Value = [1-9][0-9]* ;
+lexical Id = [a-zA-Z0-9_]+;
+lexical Value = [1-9][0-9]* | "0" ;
 extend lang::std::Layout;
 
 keyword Region = "California" | "CapeTown" | "Frankfurt" | "Bogota" | "Seoul";
@@ -42,7 +42,7 @@ syntax Spec
 	| Engine : "engine" ":" Engine engine
 	| OS : "OS" ":" OS os
 	| CPU : "CPU" ":" Value cores "cores"
-	| Memory : "memory" ":" [1-64] gb_mem "GB"
+	| Memory : "memory" ":" Value gb_mem "GB"
 	| Storage : "storage" ":" Storage "of" Value gb_sto "GB"
 	| IPV6 : "IPV6" ":" ("yes" | "no" ) ipv6 
 	;	
