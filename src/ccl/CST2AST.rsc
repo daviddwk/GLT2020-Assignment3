@@ -19,7 +19,7 @@ public AbsProgram cst2ast(Program pr){
 	visit(pr.resource.mis){
 		case StorageMI mi: mis += initStoMI(mi);
 		case ComputeMI mi: mis += initComMI(mi);
-		case IdMI mi: mis += absidmi(unparse(mi));
+		case IdMI mi: mis += absidmi("id", unparse(mi));
 		
 	}
 	
@@ -39,7 +39,7 @@ AbsMI initStoMI(StorageMI mi){
 		case IPV6Spec spec: specs += absipv6(unparse(spec.ipv6));
 	}
 	
-	return absstomi(unparse(mi.id), specs);
+	return absstomi("storage", unparse(mi.id), specs);
 }
 
 AbsMI initComMI(ComputeMI mi){
@@ -55,5 +55,5 @@ AbsMI initComMI(ComputeMI mi){
 		case IPV6Spec spec: specs += absipv6(unparse(spec.ipv6));
 	}
 	
-	return abscommi(unparse(mi.id), specs);
+	return abscommi("computing", unparse(mi.id), specs);
 }

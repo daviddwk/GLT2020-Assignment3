@@ -1,6 +1,7 @@
 module ccl::Check
 
 import ccl::AST;
+import List;
 
 /*
  * -Implement a well-formedness checker for the CCL language. For this you must use the AST. 
@@ -17,3 +18,39 @@ import ccl::AST;
 /*
 * Define a function per each verification defined in the PDF (Section 3.2.)
 */
+
+public bool checkCloudConfiguration(AbsProgram program){
+
+	if (!(checkLabel(program) && checkRefrence(program) && checkStorageSpecs(program) && checkComputingSpecs(program))) return false;
+
+	return true;
+}
+
+bool checkLabel(AbsProgram program){
+	
+	for(int i <- [0 .. size(program.re.mis)]){
+		for(int j <- [0 .. size(program.re.mis)]){
+			if(i != j){
+				if((program.re.mis[i].mitype != "id") && (program.re.mis[j].mitype != "id")){
+					if(program.re.mis[i].id == program.re.mis[j].id){
+						return false;
+					}
+				}
+			}
+		}
+	}
+	return true;
+}
+
+bool checkRefrence(AbsProgram program){
+	return true;
+}
+
+bool checkStorageSpecs(AbsProgram program){
+	return true;
+}
+
+bool checkComputingSpecs(AbsProgram program){
+	return true;
+}
+

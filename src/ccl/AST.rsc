@@ -8,9 +8,9 @@ module ccl::AST
  
  data AbsProgram = absprogram(AbsResource re);
  data AbsResource = absresource(str id, list[AbsMI] mis);
- data AbsMI =  absstomi( str id, list[AbsSpecification] specs)
- 	| abscommi( str id, list[AbsSpecification] specs)
- 	| absidmi( str id)
+ data AbsMI =  absstomi(str mitype, str id, list[AbsSpecification] specs)
+ 	| abscommi(str mitype, str id, list[AbsSpecification] specs)
+ 	| absidmi(str mitype, str id)
  	;
  data AbsSpecification = absregion(str region)
  	| absengine(str engine)
