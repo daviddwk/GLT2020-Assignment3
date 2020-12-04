@@ -2,7 +2,6 @@ module ccl::Check
 
 import ccl::AST;
 import List;
-import IO;
 import Set;
 
 /*
@@ -22,12 +21,12 @@ import Set;
 */
 
 public bool checkCloudConfiguration(AbsProgram program){
-
-	if (!(checkLabel(program) && checkRefrence(program) && checkSpecs(program) && checkStorageSpecs(program) && checkComputingSpecs(program) && checkIfSameConfig(program))) return false;
+	/*Runs every individial check function and returns true if there are no issues*/
+	if (!(checkLabel(program) && checkRefrence(program) && checkSpecs(program) && checkStorageSpecs(program) && checkComputingSpecs(program) && checkIfSameConfig(program) && checkSameRegion(program))) return false;
 	return true;
 }
 
-/*creadting lists of ids*/
+/*checks to make sure there are no duplicate IDs*/
 bool checkLabel(AbsProgram program){
 	list[str] resids = [];
 	list[str] miids = [];
@@ -37,7 +36,6 @@ bool checkLabel(AbsProgram program){
 			if (program.resources[h].mis[i].mitype != "id") miids += program.resources[h].mis[i].id;
 		}
 	}
-/*making sure there are no duplicates*/
 	set[str] setresids = toSet(resids);
 	if(size(setresids) != size(resids)) return false;
 	set[str] setmiids = toSet(miids);
@@ -45,17 +43,15 @@ bool checkLabel(AbsProgram program){
 	return true;
 }
 
+/*checks that IDMI is refrencing a properly defined MI*/
 bool checkRefrence(AbsProgram program){
-	/* generate a list of ids of id type mis*/
 	list[str] ids = [];
 	for(int h <- [0 .. size(program.resources)]){
-		/* no reusing ids between resources, but move this line back if you want that*/		
 		for(int i <- [0 .. size(program.resources[h].mis)]){
 			if(program.resources[h].mis[i].mitype == "id"){
 				ids += program.resources[h].mis[i].id;
 			}
 		}
-		/* makes sure these ids correspond with a compute or storage mi*/
 	}
 	for(int i <- [0 .. size(ids)]){
 		bool refFound = false;
@@ -73,6 +69,7 @@ bool checkRefrence(AbsProgram program){
 	return true;
 }
 
+/*checks that every MI has the correct specifications and no extras*/
 bool checkSpecs(AbsProgram program){
 	for(int h <- [0 .. size(program.resources)]){
 		for(int i <- [0 .. size(program.resources[h].mis)]){
@@ -147,9 +144,9 @@ bool checkSpecs(AbsProgram program){
 		}
 	}
 	return true;
-	/* !os cpu mem storage ipv6 engine region */
 }
 
+/*checks that storage mi specs are set appropriately*/
 bool checkStorageSpecs(AbsProgram program){
 	for(int h <- [0 .. size(program.resources)]){
 	    for(int i <- [0 .. size(program.resources[h].mis)]){
@@ -177,6 +174,7 @@ bool checkStorageSpecs(AbsProgram program){
     return true;
 }
 
+/*checks that computing mi specs are set appropriately*/
 bool checkComputingSpecs(AbsProgram program){
 	for(int h <- [0 .. size(program.resources)]){
 	    for(int i <- [0 .. size(program.resources[h].mis)]){
@@ -201,6 +199,7 @@ bool checkComputingSpecs(AbsProgram program){
     return true;
 }
 
+/*checks that no mis have the exact same configuration of specifications*/
 bool checkIfSameConfig(AbsProgram program){
     for(int h <- [0 .. size(program.resources)]){
         for(int i <- [0 .. size(program.resources[h].mis)]){
@@ -216,6 +215,27 @@ bool checkIfSameConfig(AbsProgram program){
                 }
             }
            
+        }
+    }
+    return true;
+}
+
+/*checks that every mi in a resource are in the same region*/
+bool checkSameRegion(AbsProgram program){
+	for(int h <- [0 .. size(program.resources)]){
+		str region = "";
+        for(int i <- [0 .. size(program.resources[h].mis)]){
+        	if(program.resources[h].mis[i].mitype != "id"){
+            	for(int j <- [0 .. size(program.resources[h].mis[i].specs)]){
+           	    	if(program.resources[h].mis[i].specs[j].spectype == "region"){
+         	       		if(region == ""){
+							region = program.resources[h].mis[i].specs[j].region;
+         	       		} else if(region != program.resources[h].mis[i].specs[j].region){
+         	       			return false;
+         	       		}
+        	        }
+            	}
+			}
         }
     }
     return true;

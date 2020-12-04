@@ -6,10 +6,12 @@ module ccl::AST
  * - make sure there is an almost one-to-one correspondence with the grammar (Syntax.rsc)
  */
  
+ 
+ /*This defines the structue of a ccl absctact syntax tree*/
  data AbsProgram = absprogram(list[AbsResource] resources);
  data AbsResource = absresource(str id, list[AbsMI] mis);
  data AbsMI =  absmi(str mitype, str id, list[AbsSpecification] specs)
- 	| absidmi(str mitype, str id)
+ 	| absidmi(str mitype, str id) /*concider expanding to take mi argument*/
  	;
  data AbsSpecification = absregion(str spectype, str region)
  	| absengine(str spectype, str engine)

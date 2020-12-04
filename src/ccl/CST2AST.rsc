@@ -12,7 +12,7 @@ import ParseTree;
  * - Map lexical nodes to Rascal primitive types (bool, int, str)
  */
 
-
+/*creating a list of abstract resources*/
 public AbsProgram cst2ast(Program pr){
 	list[AbsResource] res = [];
 	
@@ -22,6 +22,7 @@ public AbsProgram cst2ast(Program pr){
 	return absprogram(res);
 }
 
+/*creating a list of abstract mis for each resource*/
 AbsResource initResource(Resource re){
 
 	list[AbsMI] mis = [];
@@ -34,7 +35,7 @@ AbsResource initResource(Resource re){
 	}
 	return absresource(unparse(re.id), mis);
 }
-
+/*handing abstract specs for Storage MI*/
 AbsMI initStoMI(StorageMI mi){
 	list[AbsSpecification] specs = [];
 	
@@ -51,6 +52,7 @@ AbsMI initStoMI(StorageMI mi){
 	return absmi("storage", unparse(mi.id), specs);
 }
 
+/*handing abstract specs for Computing MI*/
 AbsMI initComMI(ComputeMI mi){
 	list[AbsSpecification] specs = [];
 	
