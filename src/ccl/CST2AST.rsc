@@ -36,7 +36,7 @@ AbsMI initStoMI(StorageMI mi){
 		case OSSpec spec: specs += absos(unparse(spec.os));
 		case MemorySpec spec: specs += absmemory(toInt(unparse(spec.gb)));
 		case StorageSpec spec: specs += absstorage(unparse(spec.sto), toInt(unparse(spec.gb)));
-		case IPV6Spec spec: specs += absipv6(unparse(spec.ipv6));
+		case IPV6Spec spec: specs += absipv6(unparse(spec.ipv6) != "no");
 	}
 	
 	return absstomi("storage", unparse(mi.id), specs);
@@ -52,7 +52,7 @@ AbsMI initComMI(ComputeMI mi){
 		case OSSpec spec: specs += absos(unparse(spec.os));
 		case MemorySpec spec: specs += absmemory(toInt(unparse(spec.gb)));
 		case StorageSpec spec: specs += absstorage(unparse(spec.sto), toInt(unparse(spec.gb)));
-		case IPV6Spec spec: specs += absipv6(unparse(spec.ipv6));
+		case IPV6Spec spec: specs += absipv6(unparse(spec.ipv6) == "yes");
 	}
 	
 	return abscommi("computing", unparse(mi.id), specs);

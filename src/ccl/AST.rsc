@@ -18,5 +18,5 @@ module ccl::AST
 	| abscpu(int cores)
 	| absmemory(int gbs)
 	| absstorage(str storage, int gbs)
-	| absipv6(str ipv6)
+	| absipv6(bool ipv6)
 	;

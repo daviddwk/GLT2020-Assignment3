@@ -27,7 +27,7 @@ public bool checkCloudConfiguration(AbsProgram program){
 }
 
 bool checkLabel(AbsProgram program){
-	
+	/* every mi not of type id should have a unique id*/
 	for(int i <- [0 .. size(program.re.mis)]){
 		for(int j <- [0 .. size(program.re.mis)]){
 			if(i != j){
