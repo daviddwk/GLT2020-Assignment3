@@ -2,6 +2,7 @@ module ccl::Check
 
 import ccl::AST;
 import List;
+import IO;
 
 /*
  * -Implement a well-formedness checker for the CCL language. For this you must use the AST. 
@@ -22,7 +23,6 @@ import List;
 public bool checkCloudConfiguration(AbsProgram program){
 
 	if (!(checkLabel(program) && checkRefrence(program) && checkStorageSpecs(program) && checkComputingSpecs(program))) return false;
-
 	return true;
 }
 
@@ -67,10 +67,50 @@ bool checkRefrence(AbsProgram program){
 }
 
 bool checkStorageSpecs(AbsProgram program){
+	
+	for(int i <- [0 .. size(program.re.mis)]){
+		if(program.re.mis[i].mitype == "storage"){
+		
+			bool region = false;
+			bool engine = false;
+			bool cpu = false;
+			bool memory = false;
+			bool storage = false;
+			bool ipv6 = false;
+			
+			for(int j <- [0 .. size(program.re.mis[i].specs)]){
+				if(program.re.mis[i].specs[j].spectype == "region"){
+					if (region) return false;
+					if (!region) region = true;				
+				} else if (program.re.mis[i].specs[j].spectype == "engine"){
+					if (engine) return false;
+					if (!engine) engine = true;
+				} else if (program.re.mis[i].specs[j].spectype == "cpu"){
+					if (cpu) return false;
+					if (!cpu) cpu = true;
+				} else if (program.re.mis[i].specs[j].spectype == "os"){
+					return false;
+				} else if (program.re.mis[i].specs[j].spectype == "memory"){
+					if (memory) return false;
+					if (!memory) memory = true;
+				} else if (program.re.mis[i].specs[j].spectype == "storage"){
+					if (storage) return false;	
+					if (!storage) storage = true;
+				} else if (program.re.mis[i].specs[j].spectype == "ipv6"){
+					if (ipv6) return false;
+					if (!ipv6) ipv6 = true;
+				}
+			}
+			if(!(region && engine && cpu && memory && storage && ipv6)) return false;
+		}
+	}
+		
 	return true;
+	/* !os cpu mem storage ipv6 engine region */
 }
 
 bool checkComputingSpecs(AbsProgram program){
 	return true;
+	/* os cpu + mem + storage 25-1000 ipv6 !engine region */
 }
 
