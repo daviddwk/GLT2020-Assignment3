@@ -20,11 +20,11 @@ keyword Res = "resource";
 
 
 start syntax Program 
-	= "resource" Resource resource
+	= Resource* resources
 	;
 
 syntax Resource 
-	=  Id id "{" MIs mis "}"
+	= "resource" Id id "{" MIs mis "}"
 	;
 
 syntax MIs

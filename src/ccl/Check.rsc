@@ -22,18 +22,20 @@ import IO;
 
 public bool checkCloudConfiguration(AbsProgram program){
 
-	if (!(checkLabel(program) && checkRefrence(program) && checkStorageSpecs(program) && checkComputingSpecs(program))) return false;
+	if (!(checkLabel(program) && checkRefrence(program) && checkSpecs(program) && checkStorageSpecs(program) && checkComputingSpecs(program))) return false;
 	return true;
 }
 
 bool checkLabel(AbsProgram program){
 	/* every mi not of type id should have a unique id*/
-	for(int i <- [0 .. size(program.re.mis)]){
-		for(int j <- [0 .. size(program.re.mis)]){
-			if(i != j){
-				if((program.re.mis[i].mitype != "id") && (program.re.mis[j].mitype != "id")){
-					if(program.re.mis[i].id == program.re.mis[j].id){
-						return false;
+	for(int h <- [0 .. size(program.resources)]){
+		for(int i <- [0 .. size(program.resources[h].mis)]){
+			for(int j <- [0 .. size(program.resources[h].mis)]){
+				if(i != j){
+					if((program.resources[h].mis[i].mitype != "id") && (program.resources[h].mis[j].mitype != "id")){
+						if(program.resources[h].mis[i].id == program.resources[h].mis[j].id){
+							return false;
+						}
 					}
 				}
 			}
@@ -44,110 +46,155 @@ bool checkLabel(AbsProgram program){
 
 bool checkRefrence(AbsProgram program){
 	/* generate a list of ids of id type mis*/
-	list[str] ids = [];
-	
-	for(int i <- [0 .. size(program.re.mis)]){
-		if(program.re.mis[i].mitype == "id"){
-			ids += program.re.mis[i].id;
-		}
-	}
-	/* makes sure these ids correspond with a compute or storage mi*/
-	for(int i <- [0 .. size(ids)]){
-		bool refFound = false;
-		for(int j <- [0 .. size(program.re.mis)]){
-			if(program.re.mis[j].mitype != "id"){
-				if(ids[i] == program.re.mis[j].id){
-					refFound = true;
-				}	
+	for(int h <- [0 .. size(program.resources)]){
+		/* no reusing ids between resources, but move this line back if you want that*/
+		list[str] ids = [];
+		
+		for(int i <- [0 .. size(program.resources[h].mis)]){
+			if(program.resources[h].mis[i].mitype == "id"){
+				ids += program.resources[h].mis[i].id;
 			}
 		}
-		if(!refFound) return false;
+		/* makes sure these ids correspond with a compute or storage mi*/
+		for(int i <- [0 .. size(ids)]){
+			bool refFound = false;
+			for(int j <- [0 .. size(program.resources[h].mis)]){
+				if(program.resources[h].mis[j].mitype != "id"){
+					if(ids[i] == program.resources[h].mis[j].id){
+						refFound = true;
+					}	
+				}
+			}
+			if(!refFound) return false;
+		}
 	}
 	return true;
 }
 
-bool checkStorageSpecs(AbsProgram program){
-	
-	for(int i <- [0 .. size(program.re.mis)]){
-		if(program.re.mis[i].mitype == "storage"){
-		
-			bool region = false;
-			bool engine = false;
-			bool cpu = false;
-			bool memory = false;
-			bool storage = false;
-			bool ipv6 = false;
+bool checkSpecs(AbsProgram program){
+	for(int h <- [0 .. size(program.resources)]){
+		for(int i <- [0 .. size(program.resources[h].mis)]){
+			if(program.resources[h].mis[i].mitype == "storage"){
 			
-			for(int j <- [0 .. size(program.re.mis[i].specs)]){
-				if(program.re.mis[i].specs[j].spectype == "region"){
-					if (region) return false;
-					if (!region) region = true;				
-				} else if (program.re.mis[i].specs[j].spectype == "engine"){
-					if (engine) return false;
-					if (!engine) engine = true;
-				} else if (program.re.mis[i].specs[j].spectype == "cpu"){
-					if (cpu) return false;
-					if (!cpu) cpu = true;
-				} else if (program.re.mis[i].specs[j].spectype == "os"){
-					return false;
-				} else if (program.re.mis[i].specs[j].spectype == "memory"){
-					if (memory) return false;
-					if (!memory) memory = true;
-				} else if (program.re.mis[i].specs[j].spectype == "storage"){
-					if (storage) return false;	
-					if (!storage) storage = true;
-				} else if (program.re.mis[i].specs[j].spectype == "ipv6"){
-					if (ipv6) return false;
-					if (!ipv6) ipv6 = true;
+				bool region = false;
+				bool engine = false;
+				bool cpu = false;
+				bool memory = false;
+				bool storage = false;
+				bool ipv6 = false;
+				
+				for(int j <- [0 .. size(program.resources[h].mis[i].specs)]){
+					if(program.resources[h].mis[i].specs[j].spectype == "region"){
+						if (region) return false;
+						if (!region) region = true;				
+					} else if (program.resources[h].mis[i].specs[j].spectype == "engine"){
+						if (engine) return false;
+						if (!engine) engine = true;
+					} else if (program.resources[h].mis[i].specs[j].spectype == "cpu"){
+						if (cpu) return false;
+						if (!cpu) cpu = true;
+					} else if (program.resources[h].mis[i].specs[j].spectype == "os"){
+						return false;
+					} else if (program.resources[h].mis[i].specs[j].spectype == "memory"){
+						if (memory) return false;
+						if (!memory) memory = true;
+					} else if (program.resources[h].mis[i].specs[j].spectype == "storage"){
+						if (storage) return false;	
+						if (!storage) storage = true;
+					} else if (program.resources[h].mis[i].specs[j].spectype == "ipv6"){
+						if (ipv6) return false;
+						if (!ipv6) ipv6 = true;
+					}
 				}
+				if(!(region && engine && cpu && memory && storage && ipv6)) return false;
+				
+			} else if (program.resources[h].mis[i].mitype == "computing"){
+			
+				bool region = false;
+				bool cpu = false;
+				bool os = false;
+				bool memory = false;
+				bool storage = false;
+				bool ipv6 = false;
+				
+				for(int j <- [0 .. size(program.resources[h].mis[i].specs)]){
+					if(program.resources[h].mis[i].specs[j].spectype == "region"){
+						if (region) return false;
+						if (!region) region = true;				
+					} else if (program.resources[h].mis[i].specs[j].spectype == "engine"){
+						return false;
+					} else if (program.resources[h].mis[i].specs[j].spectype == "cpu"){
+						if (cpu) return false;
+						if (!cpu) cpu = true;
+					} else if (program.resources[h].mis[i].specs[j].spectype == "os"){
+						if (os) return false;
+						if (!os) os = true;
+					} else if (program.resources[h].mis[i].specs[j].spectype == "memory"){
+						if (memory) return false;
+						if (!memory) memory = true;
+					} else if (program.resources[h].mis[i].specs[j].spectype == "storage"){
+						if (storage) return false;	
+						if (!storage) storage = true;
+					} else if (program.resources[h].mis[i].specs[j].spectype == "ipv6"){
+						if (ipv6) return false;
+						if (!ipv6) ipv6 = true;
+					}
+				}
+				if(!(region && os && cpu && memory && storage && ipv6)) return false;
 			}
-			if(!(region && engine && cpu && memory && storage && ipv6)) return false;
 		}
 	}
-	
-	for(int i <- [0 .. size(program.re.mis)]){
-		if(program.re.mis[i].mitype == "computing"){
-		
-			bool region = false;
-			bool cpu = false;
-			bool os = false;
-			bool memory = false;
-			bool storage = false;
-			bool ipv6 = false;
-			
-			for(int j <- [0 .. size(program.re.mis[i].specs)]){
-				if(program.re.mis[i].specs[j].spectype == "region"){
-					if (region) return false;
-					if (!region) region = true;				
-				} else if (program.re.mis[i].specs[j].spectype == "engine"){
-					return false;
-				} else if (program.re.mis[i].specs[j].spectype == "cpu"){
-					if (cpu) return false;
-					if (!cpu) cpu = true;
-				} else if (program.re.mis[i].specs[j].spectype == "os"){
-					if (os) return false;
-					if (!os) os = true;
-				} else if (program.re.mis[i].specs[j].spectype == "memory"){
-					if (memory) return false;
-					if (!memory) memory = true;
-				} else if (program.re.mis[i].specs[j].spectype == "storage"){
-					if (storage) return false;	
-					if (!storage) storage = true;
-				} else if (program.re.mis[i].specs[j].spectype == "ipv6"){
-					if (ipv6) return false;
-					if (!ipv6) ipv6 = true;
-				}
-			}
-			if(!(region && os && cpu && memory && storage && ipv6)) return false;
-		}
-	}
-		
 	return true;
 	/* !os cpu mem storage ipv6 engine region */
 }
 
-bool checkComputingSpecs(AbsProgram program){
-	return true;
-	/* os cpu + mem + storage 25-1000 ipv6 !engine region */
+bool checkStorageSpecs(AbsProgram program){
+	for(int h <- [0 .. size(program.resources)]){
+	    for(int i <- [0 .. size(program.resources[h].mis)]){
+	        if(program.resources[h].mis[i].mitype == "storage"){
+	            for(int j <- [0 .. size(program.resources[h].mis[i].specs)]){
+	                if(program.resources[h].mis[i].specs[j].spectype == "region" && (program.resources[h].mis[i].specs[j].region notin ["California","CapeTown","Frankfurt","Bogota","Seoul"])){
+	                    return false;
+	                }
+	                if(program.resources[h].mis[i].specs[j].spectype == "engine" && (program.resources[h].mis[i].specs[j].engine notin ["MySQL","PostgreSQL","MarinaDB","Oracle","SQLServer"])){
+	                    return false;
+	                }
+	                if(program.resources[h].mis[i].specs[j].spectype == "memory" && (program.resources[h].mis[i].specs[j].gbs > 64 || program.resources[h].mis[i].specs[j].gbs <= 0)){
+	                    return false;
+	                }
+	                if(program.resources[h].mis[i].specs[j].spectype == "cpu" && program.resources[h].mis[i].specs[j].cores <= 0){
+	                    return false;
+	                }
+	                if(program.resources[h].mis[i].specs[j].spectype == "storage" && (program.resources[h].mis[i].specs[j].gbs <= 0 || program.resources[h].mis[i].specs[j].gbs > 1000)){
+	                    return false;
+	                }
+	            }
+	        }
+	    }
+	}   
+    return true;
 }
 
+bool checkComputingSpecs(AbsProgram program){
+	for(int h <- [0 .. size(program.resources)]){
+	    for(int i <- [0 .. size(program.resources[h].mis)]){
+	        if(program.resources[h].mis[i].mitype == "computing"){
+	            for(int j <- [0 .. size(program.resources[h].mis[i].specs)]){
+	                if(program.resources[h].mis[i].specs[j].spectype == "region" && (program.resources[h].mis[i].specs[j].region notin ["California","CapeTown","Frankfurt","Bogota","Seoul"])){
+	                    return false;
+	                }
+	                if(program.resources[h].mis[i].specs[j].spectype == "memory" && (program.resources[h].mis[i].specs[j].gbs > 64 || program.resources[h].mis[i].specs[j].gbs <= 0)){
+	                    return false;
+	                }
+	                if(program.resources[h].mis[i].specs[j].spectype == "cpu" && program.resources[h].mis[i].specs[j].cores <= 0){
+	                    return false;
+	                }
+	                if(program.resources[h].mis[i].specs[j].spectype == "storage" && (program.resources[h].mis[i].specs[j].gbs < 25 || program.resources[h].mis[i].specs[j].gbs > 1000)){
+	                    return false;
+	                }
+	            }
+	        }
+	    }
+	}   
+    return true;
+}

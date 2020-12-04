@@ -14,16 +14,25 @@ import ParseTree;
 
 
 public AbsProgram cst2ast(Program pr){
+	list[AbsResource] res = [];
+	
+	visit(pr.resources){
+		case Resource re: res += initResource(re);
+	}
+	return absprogram(res);
+}
+
+AbsResource initResource(Resource re){
+
 	list[AbsMI] mis = [];
 	
-	visit(pr.resource.mis){
+	visit(re.mis){
 		case StorageMI mi: mis += initStoMI(mi);
 		case ComputeMI mi: mis += initComMI(mi);
 		case IdMI mi: mis += absidmi("id", unparse(mi));
 		
 	}
-	
-	return absprogram(absresource(unparse(pr.resource.id), mis));
+	return absresource(unparse(re.id), mis);
 }
 
 AbsMI initStoMI(StorageMI mi){
