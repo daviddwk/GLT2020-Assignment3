@@ -43,6 +43,26 @@ bool checkLabel(AbsProgram program){
 }
 
 bool checkRefrence(AbsProgram program){
+	/* generate a list of ids of id type mis*/
+	list[str] ids = [];
+	
+	for(int i <- [0 .. size(program.re.mis)]){
+		if(program.re.mis[i].mitype == "id"){
+			ids += program.re.mis[i].id;
+		}
+	}
+	/* make sure a these ids correspond with a compute or storage mi*/
+	for(int i <- [0 .. size(ids)]){
+		bool refFound = false;
+		for(int j <- [0 .. size(program.re.mis)]){
+			if(program.re.mis[j].mitype != "id"){
+				if(ids[i] == program.re.mis[j].id){
+					refFound = true;
+				}	
+			}
+		}
+		if(!refFound) return false;
+	}
 	return true;
 }
 
