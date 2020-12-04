@@ -104,6 +104,43 @@ bool checkStorageSpecs(AbsProgram program){
 			if(!(region && engine && cpu && memory && storage && ipv6)) return false;
 		}
 	}
+	
+	for(int i <- [0 .. size(program.re.mis)]){
+		if(program.re.mis[i].mitype == "computing"){
+		
+			bool region = false;
+			bool cpu = false;
+			bool os = false;
+			bool memory = false;
+			bool storage = false;
+			bool ipv6 = false;
+			
+			for(int j <- [0 .. size(program.re.mis[i].specs)]){
+				if(program.re.mis[i].specs[j].spectype == "region"){
+					if (region) return false;
+					if (!region) region = true;				
+				} else if (program.re.mis[i].specs[j].spectype == "engine"){
+					return false;
+				} else if (program.re.mis[i].specs[j].spectype == "cpu"){
+					if (cpu) return false;
+					if (!cpu) cpu = true;
+				} else if (program.re.mis[i].specs[j].spectype == "os"){
+					if (os) return false;
+					if (!os) os = true;
+				} else if (program.re.mis[i].specs[j].spectype == "memory"){
+					if (memory) return false;
+					if (!memory) memory = true;
+				} else if (program.re.mis[i].specs[j].spectype == "storage"){
+					if (storage) return false;	
+					if (!storage) storage = true;
+				} else if (program.re.mis[i].specs[j].spectype == "ipv6"){
+					if (ipv6) return false;
+					if (!ipv6) ipv6 = true;
+				}
+			}
+			if(!(region && os && cpu && memory && storage && ipv6)) return false;
+		}
+	}
 		
 	return true;
 	/* !os cpu mem storage ipv6 engine region */
