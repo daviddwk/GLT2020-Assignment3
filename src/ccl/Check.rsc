@@ -51,7 +51,7 @@ bool checkRefrence(AbsProgram program){
 			ids += program.re.mis[i].id;
 		}
 	}
-	/* make sure a these ids correspond with a compute or storage mi*/
+	/* makes sure these ids correspond with a compute or storage mi*/
 	for(int i <- [0 .. size(ids)]){
 		bool refFound = false;
 		for(int j <- [0 .. size(program.re.mis)]){

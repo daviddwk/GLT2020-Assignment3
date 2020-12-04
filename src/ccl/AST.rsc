@@ -8,15 +8,14 @@ module ccl::AST
  
  data AbsProgram = absprogram(AbsResource re);
  data AbsResource = absresource(str id, list[AbsMI] mis);
- data AbsMI =  absstomi(str mitype, str id, list[AbsSpecification] specs)
- 	| abscommi(str mitype, str id, list[AbsSpecification] specs)
+ data AbsMI =  absmi(str mitype, str id, list[AbsSpecification] specs)
  	| absidmi(str mitype, str id)
  	;
- data AbsSpecification = absregion(str region)
- 	| absengine(str engine)
- 	| absos(str os)
-	| abscpu(int cores)
-	| absmemory(int gbs)
-	| absstorage(str storage, int gbs)
-	| absipv6(bool ipv6)
+ data AbsSpecification = absregion(str spectype, str region)
+ 	| absengine(str spectype, str engine)
+ 	| absos(str spectype, str os)
+	| abscpu(str spectype,int cores)
+	| absmemory(str spectype, int gbs)
+	| absstorage(str spectype, str storage, int gbs)
+	| absipv6(str spectype, bool ipv6)
 	;

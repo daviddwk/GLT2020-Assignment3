@@ -5,8 +5,9 @@ module ccl::Syntax
  */
  
 lexical Id = ([a-zA-Z0-9_] !<< [a-zA-Z][a-zA-Z0-9_]* !>> [a-zA-Z0-9_]);
-lexical Value = [1-9][0-9]* ;
-extend lang::std::Layout;
+lexical Value = [0-9]+ ;
+
+layout Whitespace = [\t-\n\r\ ]*; 
 
 keyword Reserved = Region | Engine | OS | Storage | IPV6 | Spec | Res;
 keyword Region = "California" | "CapeTown" | "Frankfurt" | "Bogota" | "Seoul";
@@ -14,7 +15,7 @@ keyword Engine = "MySQL" | "PostgreSQL" | "MarinaDB" | "Oracle" | "SQLServer";
 keyword OS = "Linux" | "Redhat" | "Ubuntu" | "Windows";
 keyword Storage = "BLS" | "SSD";
 keyword IPV6 = "yes" | "no";
-keyword Spec = "region" | "engine" | "OS" | "CUP" | "memory" | "storage" | "IPV6";
+keyword Spec = "region" | "engine" | "OS" | "CPU" | "memory" | "storage" | "IPV6";
 keyword Res = "resource";
 
 
@@ -48,7 +49,12 @@ syntax ComputeMI
 syntax IdMI
 	= Id id
 	;
-	
+
+syntax Specifications
+	= Specification
+	| Specification "," Specifications
+	;
+
 syntax Specification
 	=  RegionSpec 
 	| EngineSpec
@@ -86,9 +92,3 @@ syntax StorageSpec
 syntax IPV6Spec
 	= "IPV6" ":" IPV6 ipv6 
 	;
-	
-syntax Specifications
-	= Specification
-	| Specification "," Specifications
-	;	
-
