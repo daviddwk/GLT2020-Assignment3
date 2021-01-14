@@ -1,95 +1,60 @@
 module ccl::Syntax
-
-/*
- * Define concrete syntax for CCL. The language's specification is available in the PDF (Section 3)
- */
  
 lexical Id = ([a-zA-Z0-9_] !<< [a-zA-Z][a-zA-Z0-9_]* !>> [a-zA-Z0-9_]);
 lexical Value = ([1-9][0-9]*) | [0] ;
 
 layout Whitespace = [\t-\n\r\ ]*; 
-/*these reserved works are also checked for in the checker*/
-keyword Reserved = Region | Engine | OS | Storage | IPV6 | Spec | Res;
-keyword Region = "California" | "CapeTown" | "Frankfurt" | "Bogota" | "Seoul";
-keyword Engine = "MySQL" | "PostgreSQL" | "MarinaDB" | "Oracle" | "SQLServer";
-keyword OS = "Linux" | "Redhat" | "Ubuntu" | "Windows";
-keyword Storage = "BLS" | "SSD";
-keyword IPV6 = "yes" | "no";
-keyword Spec = "region" | "engine" | "OS" | "CPU" | "memory" | "storage" | "IPV6";
-keyword Res = "resource";
 
-/*A program contains a number of resources*/
-start syntax Program 
-	= Resource* resources
+keyword Bool = "true" | "false";
+
+start syntax Program program
+	= Preset* presets
 	;
-/*Resources contain a number of MIs*/
-syntax Resource 
-	= "resource" Id id "{" MIs mis "}"
+	
+syntax Preset
+	= Alarm alarm
+	| Mode mode
 	;
 
-syntax MIs
-	= MI mi
-	| MI mi "," MIs mis 
+syntax Alarm
+	= "mode" Id id "{" Settings settings "}"
 	;
-/*Three types of mis*/
-syntax MI
-	= StorageMI storage
-	| ComputeMI compute
-	| IdMI id
+	
+syntax Mode
+	= "alarm" Id id "{" Settings settings "}"
 	;
 
-syntax StorageMI
-	= "storage" Id id "{" Specifications specs "}"
+syntax Settings
+	= Setting setting
+	| Setting setting "," Settings settings 
 	;
 	
-syntax ComputeMI
-	= "computing" Id id "{" Specifications specs "}"
-	;
-	
-syntax IdMI
-	= Id id
-	;
-/*MIs contain specifications*/
-/*The concrete syntax does not check to make sure that the correct specs are used*/
-syntax Specifications
-	= Specification
-	| Specification "," Specifications
-	;
-/*defining specifications*/
-syntax Specification
-	=  RegionSpec 
-	| EngineSpec
-	| CPUSpec
-	| OSSpec
-	| MemorySpec
-	| StorageSpec
-	| IPV6Spec
+syntax Setting
+	= TimerSetting timerSet
+	| LightSetting lightSet
+	| HeatSetting heatSet
+	| FanSetting fanSet
+	| VolumeSetting volSet
 	;
 
-syntax RegionSpec
-	= "region" ":" Region region
+syntax TimerSetting
+	= "timer" "=" Value time
+	| "timer" "=" "userinput" time
 	;
 	
-syntax EngineSpec
-	= "engine" ":" Engine engine
+syntax LightSetting
+	= "light" "=" Bool light
 	;
 	
-syntax OSSpec
-	= "OS" ":" OS os
+syntax HeatSetting
+	= "heat" "=" Value heat
+	;
+		
+syntax FanSetting
+	= "fan" "=" Bool fan
+	;
+		
+syntax VolumeSetting
+	= "volume" "=" Value vol
 	;
 	
-syntax CPUSpec
-	= "CPU" ":" Value cores "cores"
-	;
-	
-syntax MemorySpec
-	= "memory" ":" Value gb "GB"
-	;
-	
-syntax StorageSpec
-	= "storage" ":" Storage sto "of" Value gb "GB"
-	;
-	
-syntax IPV6Spec
-	= "IPV6" ":" IPV6 ipv6 
-	;
