@@ -4,11 +4,13 @@ module ovenLang::AST
  data AbsPreset = abspresetalarm(str id, list[AbsSetting] settings)
  	| abspresetmode(str id, list[AbsSetting] settings)
  	; 
- data AbsSetting= abstimer(str settype, int time) // 0 represents user input
- 	| abslight(str settype, str light)
- 	| absheat(str settype, int heat)
- 	| absfan(str settype, bool fan)
- 	| absvolume(str settype, int vol)
- 	| absbuzzer(str settype, str buzz)
- 	| absalarm(str settype, str alarm)
+ data AbsSetting = abstime(int time) // time in seconds
+ 	| abslight(bool light)
+ 	| absheating(str heat)
+ 	| abstemperature(int temperature)
+ 	| absfan(bool fan)
+ 	| absvolume(int volume)
+ 	| abspattern(str pattern)
+ 	| absloop(int loop) // 0 represents looping continuously
+ 	| absalarm(str alarm)
 	;
