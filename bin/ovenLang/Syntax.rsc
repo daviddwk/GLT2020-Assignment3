@@ -2,12 +2,12 @@ module ovenLang::Syntax
  
 lexical Id = ([a-zA-Z0-9_] !<< [a-zA-Z][a-zA-Z0-9_]* !>> [a-zA-Z0-9_]);
 lexical Value = ([1-9][0-9]*) | [0] ;
+lexical Pattern = ( "." | "-" )+;
 
 layout Whitespace = [\t-\n\r\ ]*; 
 
 keyword Bool = "true" | "false";
-keyword Light = "flashing" | "on" | "off";
-keyword Buzz = "off" | "sample" | "otherSample";
+keyword Heating = "top" | "bottom" | "both";
 
 start syntax Program
 	= Preset* presets
@@ -24,38 +24,47 @@ syntax Settings
 	;
 	
 syntax Setting
-	= TimerSetting timerSet
+	= TimeSetting timeSet
 	| LightSetting lightSet
-	| HeatSetting heatSet
+	| HeatingSetting heatSet
+	| TemperatureSetting tempSet
 	| FanSetting fanSet
 	| VolumeSetting volSet
-	| BuzzerSetting buzzSet
+	| PatternSetting patSet
+	| LoopSetting loopSet
 	| AlarmSetting alarmSet
 	;
 
-syntax TimerSetting
-	= "timer" "=" Value time
-	| "timer" "=" "userinput" time
+syntax TimeSetting
+	= "time" "=" Value hours ":" Value minutes ":" Value seconds
 	;
 	
 syntax LightSetting
-	= "light" "=" Light light
+	= "light" "=" Bool light
 	;
 	
-syntax HeatSetting
-	= "heat" "=" Value heat
+syntax HeatingSetting
+	= "heating" "=" Heating heating
+	;
+	
+syntax TemperatureSetting
+	= "temperature" "=" Value temperature
 	;
 		
 syntax FanSetting
 	= "fan" "=" Bool fan
 	;
-		
-syntax VolumeSetting
-	= "volume" "=" Value vol
-	;
 
-syntax BuzzerSetting
-	= "buzzer" "=" Buzz buzz
+syntax VolumeSetting
+	= "volume" "=" Value volume
+	;
+	
+syntax PatternSetting
+	= "pattern" "=" Pattern pattern
+	;
+	
+syntax LoopSetting
+	= "loop" "=" Value loop
 	;
 	
 syntax AlarmSetting
