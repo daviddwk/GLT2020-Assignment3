@@ -3,68 +3,39 @@ module ccl::CST2AST
 import ccl::AST;
 import ccl::Syntax;
 import String;
+import Boolean;
 import ParseTree;
 
-/*
- * -Implement a mapping from concrete syntax trees (CSTs) to abstract syntax trees (ASTs)
- * - Hint: Use switch to do case distinction with concrete patterns 
- * - Map regular CST arguments (e.g., *, +, ?) to lists 
- * - Map lexical nodes to Rascal primitive types (bool, int, str)
- */
-
-/*creating a list of abstract resources*/
-public AbsProgram cst2ast(Program pr){
-	list[AbsResource] res = [];
+/*creating a list of abstract presets*/
+public AbsProgram cst2ast(Program prog){
+	list[AbsPreset] pres = [];
 	
-	visit(pr.resources){
-		case Resource re: res += initResource(re);
+	visit(prog.presets){
+		case Preset pre: pres += initPreset(pre);
 	}
-	return absprogram(res);
+	return absprogram(pres);
 }
 
-/*creating a list of abstract mis for each resource*/
-AbsResource initResource(Resource re){
+/*creating a list of abstract settings and returning the proper preset type*/
+AbsPreset initPreset(Preset pre){
 
-	list[AbsMI] mis = [];
+	list[AbsSetting] setts = [];
 	
-	visit(re.mis){
-		case StorageMI mi: mis += initStoMI(mi);
-		case ComputeMI mi: mis += initComMI(mi);
-		case IdMI mi: mis += absidmi("id", unparse(mi));
-		
-	}
-	return absresource(unparse(re.id), mis);
-}
-/*handing abstract specs for Storage MI*/
-AbsMI initStoMI(StorageMI mi){
-	list[AbsSpecification] specs = [];
-	
-	visit(mi.specs){
-		case RegionSpec spec: specs += absregion("region", unparse(spec.region));
-		case EngineSpec spec: specs += absengine("engine", unparse(spec.engine));
-		case CPUSpec spec: specs += abscpu("cpu", toInt(unparse(spec.cores)));
-		case OSSpec spec: specs += absos("os", unparse(spec.os));
-		case MemorySpec spec: specs += absmemory("memory", toInt(unparse(spec.gb)));
-		case StorageSpec spec: specs += absstorage("storage", unparse(spec.sto), toInt(unparse(spec.gb)));
-		case IPV6Spec spec: specs += absipv6("ipv6", unparse(spec.ipv6) != "no");
+	visit(pre.settings){
+	 	case HeatingSetting sett: setts += absheating("heating", unparse(sett.heating));
+	 	case TemperatureSetting sett: setts += abstemperature("temperature", toInt(unparse(sett.temperature)));
+		case TimeSetting sett: setts += abstime("time", toInt(unparse(sett.seconds)) + 60*toInt(unparse(sett.minutes)) + 60*60*toInt(unparse(sett.hours)) );
+ 		case LightSetting sett: setts += abslight("light", fromString(unparse(sett.light)));
+ 		case FanSetting sett: setts += absfan("fan", fromString(unparse(sett.fan)));
+ 		case VolumeSetting sett: setts += absvolume("volume", toInt(unparse(sett.volume)));
+ 		case PatternSetting sett: setts += abspattern("pattern", unparse(sett.pattern));
+ 		case LoopSetting sett: setts += absloop("loop", toInt(unparse(sett.loop)));
+ 		case AlarmSetting sett: setts += absalarm("alarm", unparse(sett.alarm));
 	}
 	
-	return absmi("storage", unparse(mi.id), specs);
-}
-
-/*handing abstract specs for Computing MI*/
-AbsMI initComMI(ComputeMI mi){
-	list[AbsSpecification] specs = [];
-	
-	visit(mi.specs){
-		case RegionSpec spec: specs += absregion("region", unparse(spec.region));
-		case EngineSpec spec: specs += absengine("engine", unparse(spec.engine));
-		case CPUSpec spec: specs += abscpu("cpu", toInt(unparse(spec.cores)));
-		case OSSpec spec: specs += absos("os", unparse(spec.os));
-		case MemorySpec spec: specs += absmemory("memory", toInt(unparse(spec.gb)));
-		case StorageSpec spec: specs += absstorage("storage", unparse(spec.sto), toInt(unparse(spec.gb)));
-		case IPV6Spec spec: specs += absipv6("ipv6", unparse(spec.ipv6) != "no");
+	if(unparse(pre.presettype) == "alarm"){
+		return abspresetalarm("alarm", unparse(pre.id), setts);
+	} else {
+		return abspresetmode("mode", unparse(pre.id), setts);
 	}
-	
-	return absmi("computing", unparse(mi.id), specs);
 }

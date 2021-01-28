@@ -1,23 +1,16 @@
 module ccl::AST
 
-/*
- * Define Abstract Syntax for CCL
- *
- * - make sure there is an almost one-to-one correspondence with the grammar (Syntax.rsc)
- */
- 
- 
- /*This defines the structue of a ccl absctact syntax tree*/
- data AbsProgram = absprogram(list[AbsResource] resources);
- data AbsResource = absresource(str id, list[AbsMI] mis);
- data AbsMI =  absmi(str mitype, str id, list[AbsSpecification] specs)
- 	| absidmi(str mitype, str id) /*concider expanding to take mi argument*/
- 	;
- data AbsSpecification = absregion(str spectype, str region)
- 	| absengine(str spectype, str engine)
- 	| absos(str spectype, str os)
-	| abscpu(str spectype,int cores)
-	| absmemory(str spectype, int gbs)
-	| absstorage(str spectype, str storage, int gbs)
-	| absipv6(str spectype, bool ipv6)
+ data AbsProgram = absprogram(list[AbsPreset] presets);
+ data AbsPreset = abspresetalarm(str presettype, str id, list[AbsSetting] settings)
+ 	| abspresetmode(str presettype, str id, list[AbsSetting] settings)
+ 	; 
+ data AbsSetting = abstime(str settype, int time) // time in seconds
+ 	| abslight(str settype, bool light)
+ 	| absheating(str settype, str heat)
+ 	| abstemperature(str settype, int temperature)
+ 	| absfan(str settype, bool fan)
+ 	| absvolume(str settype, int volume)
+ 	| abspattern(str settype, str pattern)
+ 	| absloop(str settype, int loop) // 0 represents looping continuously
+ 	| absalarm(str settype, str alarm)
 	;

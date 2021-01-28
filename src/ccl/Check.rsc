@@ -1,242 +1,164 @@
 module ccl::Check
 
 import ccl::AST;
+import String;
+import util::Math;
 import List;
 import Set;
-
-/*
- * -Implement a well-formedness checker for the CCL language. For this you must use the AST. 
- * - Hint: Map regular CST arguments (e.g., *, +, ?) to lists 
- * - Hint: Map lexical nodes to Rascal primitive types (bool, int, str)
- * - Hint: Use switch to do case distinction with concrete patterns
- */
-
- /*
- * Create a function called checkCloudConfiguration(...), which is responsible for calling all the required functions that check the program's well-formedness as described in the PDF (Section 3.2.) 
- * This function takes as a parameter the program's AST and returns true if the program is well-formed or false otherwise.
- */
- 
-/*
-* Define a function per each verification defined in the PDF (Section 3.2.)
-*/
+import IO;
 
 public bool checkCloudConfiguration(AbsProgram program){
-	/*Runs every individial check function and returns true if there are no issues*/
-	if (!(checkLabel(program) && checkRefrence(program) && checkSpecs(program) && checkStorageSpecs(program) && checkComputingSpecs(program) && checkIfSameConfig(program) && checkSameRegion(program))) return false;
+	//Runs every individial check function and returns true if there are no issues
+	if (!(checkLabel(program) && checkSettings(program) && checkModeSetting(program) && checkAlarmSetting(program) && checkIfSameConfig(program))) return false;
 	return true;
 }
 
-/*checks to make sure there are no duplicate IDs*/
+//checks to make sure there are no duplicate IDs
 bool checkLabel(AbsProgram program){
-	list[str] resids = [];
-	list[str] miids = [];
-	for(int h <- [0 .. size(program.resources)]){
-		resids += program.resources[h].id;
-		for(int i <- [0 .. size(program.resources[h].mis)]){
-			if (program.resources[h].mis[i].mitype != "id") miids += program.resources[h].mis[i].id;
-		}
+	list[str] presetids = [];
+	for(int h <- [0 .. size(program.presets)]){
+		presetids += program.presets[h].id;
 	}
-	set[str] setresids = toSet(resids);
-	if(size(setresids) != size(resids)) return false;
-	set[str] setmiids = toSet(miids);
-	if(size(setmiids) != size(miids)) return false;
+	set[str] setpresetids = toSet(presetids);
+	if(size(setpresetids) != size(presetids)) return false;
 	return true;
 }
 
-/*checks that IDMI is refrencing a properly defined MI*/
-bool checkRefrence(AbsProgram program){
-	list[str] ids = [];
-	for(int h <- [0 .. size(program.resources)]){
-		for(int i <- [0 .. size(program.resources[h].mis)]){
-			if(program.resources[h].mis[i].mitype == "id"){
-				ids += program.resources[h].mis[i].id;
-			}
-		}
-	}
-	for(int i <- [0 .. size(ids)]){
-		bool refFound = false;
-		for(int h <- [0 .. size(program.resources)]){
-			for(int j <- [0 .. size(program.resources[h].mis)]){
-				if(program.resources[h].mis[j].mitype != "id"){
-					if(ids[i] == program.resources[h].mis[j].id){
-						refFound = true;
-					}	
-				}
-			}
-			if(!refFound) return false;
-		}
-	}
-	return true;
-}
-
-/*checks that every MI has the correct specifications and no extras*/
-bool checkSpecs(AbsProgram program){
-	for(int h <- [0 .. size(program.resources)]){
-		for(int i <- [0 .. size(program.resources[h].mis)]){
-			if(program.resources[h].mis[i].mitype == "storage"){
+//checks that every MI has the correct specifications and no extras
+bool checkSettings(AbsProgram program){
+	for(int h <- [0 .. size(program.presets)]){
+		if(program.presets[h].presettype == "mode"){
+		
+			bool alarm = false;
+			bool fan = false;
+			bool heating = false;
+			bool light = false;
+			bool temperature = false;
+			bool time = false;
 			
-				bool region = false;
-				bool engine = false;
-				bool cpu = false;
-				bool memory = false;
-				bool storage = false;
-				bool ipv6 = false;
-				
-				for(int j <- [0 .. size(program.resources[h].mis[i].specs)]){
-					if(program.resources[h].mis[i].specs[j].spectype == "region"){
-						if (region) return false;
-						if (!region) region = true;				
-					} else if (program.resources[h].mis[i].specs[j].spectype == "engine"){
-						if (engine) return false;
-						if (!engine) engine = true;
-					} else if (program.resources[h].mis[i].specs[j].spectype == "cpu"){
-						if (cpu) return false;
-						if (!cpu) cpu = true;
-					} else if (program.resources[h].mis[i].specs[j].spectype == "os"){
-						return false;
-					} else if (program.resources[h].mis[i].specs[j].spectype == "memory"){
-						if (memory) return false;
-						if (!memory) memory = true;
-					} else if (program.resources[h].mis[i].specs[j].spectype == "storage"){
-						if (storage) return false;	
-						if (!storage) storage = true;
-					} else if (program.resources[h].mis[i].specs[j].spectype == "ipv6"){
-						if (ipv6) return false;
-						if (!ipv6) ipv6 = true;
-					}
+			for(int i <- [0 .. size(program.presets[h].settings)]){
+				if(program.presets[h].settings[i].settype == "alarm"){
+					if (alarm) return false;
+					if (!alarm) alarm = true;				
+				} else if (program.presets[h].settings[i].settype == "fan"){
+					if (fan) return false;
+					if (!fan) fan = true;
+				} else if (program.presets[h].settings[i].settype == "heating"){
+					if (heating) return false;
+					if (!heating) heating = true;
+				} else if (program.presets[h].settings[i].settype == "light"){
+					if (light) return false;
+					if (!light) light = true;
+				} else if (program.presets[h].settings[i].settype == "temperature"){
+					if (temperature) return false;	
+					if (!temperature) temperature = true;
+				} else if (program.presets[h].settings[i].settype == "time"){
+					if (time) return false;
+					if (!time) time = true;
 				}
-				if(!(region && engine && cpu && memory && storage && ipv6)) return false;
-				
-			} else if (program.resources[h].mis[i].mitype == "computing"){
-			
-				bool region = false;
-				bool cpu = false;
-				bool os = false;
-				bool memory = false;
-				bool storage = false;
-				bool ipv6 = false;
-				
-				for(int j <- [0 .. size(program.resources[h].mis[i].specs)]){
-					if(program.resources[h].mis[i].specs[j].spectype == "region"){
-						if (region) return false;
-						if (!region) region = true;				
-					} else if (program.resources[h].mis[i].specs[j].spectype == "engine"){
-						return false;
-					} else if (program.resources[h].mis[i].specs[j].spectype == "cpu"){
-						if (cpu) return false;
-						if (!cpu) cpu = true;
-					} else if (program.resources[h].mis[i].specs[j].spectype == "os"){
-						if (os) return false;
-						if (!os) os = true;
-					} else if (program.resources[h].mis[i].specs[j].spectype == "memory"){
-						if (memory) return false;
-						if (!memory) memory = true;
-					} else if (program.resources[h].mis[i].specs[j].spectype == "storage"){
-						if (storage) return false;	
-						if (!storage) storage = true;
-					} else if (program.resources[h].mis[i].specs[j].spectype == "ipv6"){
-						if (ipv6) return false;
-						if (!ipv6) ipv6 = true;
-					}
-				}
-				if(!(region && os && cpu && memory && storage && ipv6)) return false;
 			}
+			if(!(alarm && fan && heating && light && temperature && time)) return false;
+			
+		} else if (program.presets[h].presettype == "alarm"){
+		
+			bool fan = false;
+			bool light = false;
+			bool loop = false;
+			bool pattern = false;
+			bool volume = false;
+			
+			for(int i <- [0 .. size(program.presets[h].settings)]){
+				if(program.presets[h].settings[i].settype == "fan"){
+					if (fan) return false;
+					if (!fan) fan = true;
+				} else if (program.presets[h].settings[i].settype == "light"){
+					if (light) return false;
+					if (!light) light = true;
+				} else if (program.presets[h].settings[i].settype == "loop"){
+					if (loop) return false;
+					if (!loop) loop = true;
+				} else if (program.presets[h].settings[i].settype == "pattern"){
+					if (pattern) return false;
+					if (!pattern) pattern = true;
+				} else if (program.presets[h].settings[i].settype == "volume"){
+					if (volume) return false;	
+					if (!volume) volume = true;
+				}
+			}
+			if(!(fan && loop && light && pattern && volume)) return false;
 		}
 	}
 	return true;
 }
 
-/*checks that storage mi specs are set appropriately*/
-bool checkStorageSpecs(AbsProgram program){
-	for(int h <- [0 .. size(program.resources)]){
-	    for(int i <- [0 .. size(program.resources[h].mis)]){
-	        if(program.resources[h].mis[i].mitype == "storage"){
-	            for(int j <- [0 .. size(program.resources[h].mis[i].specs)]){
-	                if(program.resources[h].mis[i].specs[j].spectype == "region" && (program.resources[h].mis[i].specs[j].region notin ["California","CapeTown","Frankfurt","Bogota","Seoul"])){
-	                    return false;
-	                }
-	                if(program.resources[h].mis[i].specs[j].spectype == "engine" && (program.resources[h].mis[i].specs[j].engine notin ["MySQL","PostgreSQL","MarinaDB","Oracle","SQLServer"])){
-	                    return false;
-	                }
-	                if(program.resources[h].mis[i].specs[j].spectype == "memory" && (program.resources[h].mis[i].specs[j].gbs > 64 || program.resources[h].mis[i].specs[j].gbs <= 0)){
-	                    return false;
-	                }
-	                if(program.resources[h].mis[i].specs[j].spectype == "cpu" && program.resources[h].mis[i].specs[j].cores <= 0){
-	                    return false;
-	                }
-	                if(program.resources[h].mis[i].specs[j].spectype == "storage" && (program.resources[h].mis[i].specs[j].gbs <= 0 || program.resources[h].mis[i].specs[j].gbs > 1000)){
-	                    return false;
-	                }
-	            }
-	        }
-	    }
+//checks that storage mi specs are set appropriately
+bool checkModeSetting(AbsProgram program){
+	for(int h <- [0 .. size(program.presets)]){
+        if(program.presets[h].presettype == "mode"){
+            for(int i <- [0 .. size(program.presets[h].settings)]){
+                if(program.presets[h].settings[i].settype == "alarm" && !checkCustomAlarm(program, program.presets[h].settings[i].alarm)){
+                    return false; //search in presets the name of alarm
+                }
+                if(program.presets[h].settings[i].settype == "heating" && (program.presets[h].settings[i].heat notin ["top","bottom","both"])){
+                    return false;
+                }
+                if(program.presets[h].settings[i].settype == "temperature" && (program.presets[h].settings[i].temperature > 290 || program.presets[h].settings[i].temperature < 0)){
+                    return false;
+                }
+                /*if(program.presets[h].settings[i].settype == "time" && program.presets[h].settings[i].time < 0){
+                    return false;
+                }*/
+            }
+        }
 	}   
     return true;
 }
 
-/*checks that computing mi specs are set appropriately*/
-bool checkComputingSpecs(AbsProgram program){
-	for(int h <- [0 .. size(program.resources)]){
-	    for(int i <- [0 .. size(program.resources[h].mis)]){
-	        if(program.resources[h].mis[i].mitype == "computing"){
-	            for(int j <- [0 .. size(program.resources[h].mis[i].specs)]){
-	                if(program.resources[h].mis[i].specs[j].spectype == "region" && (program.resources[h].mis[i].specs[j].region notin ["California","CapeTown","Frankfurt","Bogota","Seoul"])){
+//checks that computing mi specs are set appropriately
+bool checkAlarmSetting(AbsProgram program){
+	for(int h <- [0 .. size(program.presets)]){
+	        if(program.presets[h].presettype == "alarm"){
+	            for(int j <- [0 .. size(program.presets[h].settings)]){
+	                if(program.presets[h].settings[j].settype == "loop" && program.presets[h].settings[j].loop < 0){
+	                	print("loop");
+	                    return false; //max?
+	                }
+	                if(program.presets[h].settings[j].settype == "pattern" && size(program.presets[h].settings[j].pattern) <= 0 ){
 	                    return false;
 	                }
-	                if(program.resources[h].mis[i].specs[j].spectype == "memory" && (program.resources[h].mis[i].specs[j].gbs > 64 || program.resources[h].mis[i].specs[j].gbs <= 0)){
-	                    return false;
-	                }
-	                if(program.resources[h].mis[i].specs[j].spectype == "cpu" && program.resources[h].mis[i].specs[j].cores <= 0){
-	                    return false;
-	                }
-	                if(program.resources[h].mis[i].specs[j].spectype == "storage" && (program.resources[h].mis[i].specs[j].gbs < 25 || program.resources[h].mis[i].specs[j].gbs > 1000)){
+	                if(program.presets[h].settings[j].settype == "volume" && (program.presets[h].settings[j].volume < 1 || program.presets[h].settings[j].volume > 10)){
 	                    return false;
 	                }
 	            }
 	        }
-	    }
 	}   
     return true;
 }
 
-/*checks that no mis have the exact same configuration of specifications*/
+//checks that no mis have the exact same configuration of specifications
 bool checkIfSameConfig(AbsProgram program){
-    for(int h <- [0 .. size(program.resources)]){
-        for(int i <- [0 .. size(program.resources[h].mis)]){
-            for(int j <- [0 .. size(program.resources[h].mis)]){
+    for(int i <- [0 .. size(program.presets)]){
+        for(int j <- [0 .. size(program.presets)]){
                 if(i != j){
-                    if((program.resources[h].mis[i].mitype != "id") && (program.resources[h].mis[j].mitype != "id")){
-                        sort(program.resources[h].mis[i].specs);
-                        sort(program.resources[h].mis[j].specs);
-                        if(program.resources[h].mis[i].specs == program.resources[h].mis[j].specs){
+                    if((program.presets[i].presettype != "id") && (program.presets[j].presettype != "id")){
+                        sort(program.presets[i].settings);
+                        sort(program.presets[j].settings);
+                        if(program.presets[i].settings == program.presets[j].settings){
                             return false;
                         }
                     }
                 }
-            }
            
         }
     }
     return true;
 }
 
-/*checks that every mi in a resource are in the same region*/
-bool checkSameRegion(AbsProgram program){
-	for(int h <- [0 .. size(program.resources)]){
-		str region = "";
-        for(int i <- [0 .. size(program.resources[h].mis)]){
-        	if(program.resources[h].mis[i].mitype != "id"){
-            	for(int j <- [0 .. size(program.resources[h].mis[i].specs)]){
-           	    	if(program.resources[h].mis[i].specs[j].spectype == "region"){
-         	       		if(region == ""){
-							region = program.resources[h].mis[i].specs[j].region;
-         	       		} else if(region != program.resources[h].mis[i].specs[j].region){
-         	       			return false;
-         	       		}
-        	        }
-            	}
-			}
-        }
-    }
-    return true;
+bool checkCustomAlarm(AbsProgram program, str alarm){
+	for(int i <- [0 .. size(program.presets)]){
+		if(program.presets[i].presettype == "alarm" && program.presets[i].id == alarm){
+			return true;
+		}
+	}
+	return false;
 }

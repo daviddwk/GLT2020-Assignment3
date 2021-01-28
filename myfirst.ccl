@@ -1,19 +1,16 @@
-resource my_cluster {
-	storage my_db {
-		region: Bogota,
-		engine: MySQL,
-		CPU: 2 cores,
-		memory: 2 GB,
-		IPV6: no,
-		storage: BLS of 16 GB
-	},
-	computing my_server {
-		region: Bogota,
-		OS: Linux,
-		IPV6: yes,
-		storage: SSD of 256 GB,
-		CPU: 4 cores,
-		memory: 8 GB
-	},
-	my_server
+mode MyCustomMode{
+	time = 0:2:0,
+	light = true,
+	heating = top,
+	temperature = 150,
+	fan = false,
+	alarm = myAlarm
+}
+
+alarm myAlarm{
+	fan = false,
+	light = false,
+	loop = 0,
+	pattern = --,
+	volume = 2
 }
