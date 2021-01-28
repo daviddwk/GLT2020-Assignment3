@@ -2,10 +2,8 @@ module ccl::Check
 
 import ccl::AST;
 import String;
-import util::Math;
 import List;
 import Set;
-import IO;
 
 public bool checkCloudConfiguration(AbsProgram program){
 	//Runs every individial check function and returns true if there are no issues
