@@ -1,7 +1,7 @@
-module ccl::Parser
+module ovenLang::Parser
 
 import ParseTree;
-import ccl::Syntax;
+import ovenLang::Syntax;
 
 
  /*

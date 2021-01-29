@@ -1,7 +1,7 @@
-module ccl::CST2AST
+module ovenLang::CST2AST
 
-import ccl::AST;
-import ccl::Syntax;
+import ovenLang::AST;
+import ovenLang::Syntax;
 import String;
 import Boolean;
 import ParseTree;

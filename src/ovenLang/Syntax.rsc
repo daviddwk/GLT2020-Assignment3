@@ -1,4 +1,4 @@
-module ccl::Syntax
+module ovenLang::Syntax
  
 lexical Id = ([a-zA-Z0-9_] !<< [a-zA-Z][a-zA-Z0-9_]* !>> [a-zA-Z0-9_]);
 lexical Value = ([1-9][0-9]*) | [0] ;

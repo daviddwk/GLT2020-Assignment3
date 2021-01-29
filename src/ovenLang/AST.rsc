@@ -1,4 +1,4 @@
-module ccl::AST
+module ovenLang::AST
 
  data AbsProgram = absprogram(list[AbsPreset] presets);
  data AbsPreset = abspresetalarm(str presettype, str id, list[AbsSetting] settings)

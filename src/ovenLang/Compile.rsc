@@ -1,7 +1,15 @@
-module ccl::Compile
+module ovenLang::Compile
 
-import ccl::Check;
-import ccl::AST;
+import IO;
+import ovenLang::Syntax;
+import ovenLang::CST2AST;
+import ovenLang::Check;
+import ovenLang::AST;
+import ParseTree;
+
+public void compileToFile(str name){
+	writeFile(|project://glt2020-ccl/output/<name>.java|, compile(name, cst2ast(parse(#Program, |project://glt2020-ccl/sample/<name>.oven|))));
+}
 
 public str compile(str name, AbsProgram prog){
 	int error = check(prog);

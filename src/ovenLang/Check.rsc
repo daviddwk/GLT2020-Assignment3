@@ -1,6 +1,6 @@
-module ccl::Check
+module ovenLang::Check
 
-import ccl::AST;
+import ovenLang::AST;
 import IO;
 import String;
 import List;

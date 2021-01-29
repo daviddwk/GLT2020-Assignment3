@@ -1,6 +1,6 @@
-public class code {
+public class good {
   public static void main(String args[]) throws java.io.IOException { 
-     new code().run();
+     new good().run();
   }
   public void run() throws java.io.IOException {
   	
