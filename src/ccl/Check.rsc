@@ -6,10 +6,14 @@ import String;
 import List;
 import Set;
 
-public bool checkCloudConfiguration(AbsProgram program){
+public int checkCloudConfiguration(AbsProgram program){
 	//Runs every individial check function and returns true if there are no issues
-	if (!(checkLabel(program) && checkSettings(program) && checkModeSetting(program) && checkAlarmSetting(program) && checkIfSameConfig(program))) return false;
-	return true;
+	if(!checkLabel(program)) return 1;
+	if(!checkSettings(program)) return 2;
+	if(!checkModeSetting(program)) return 3;
+	if(!checkAlarmSetting(program)) return 4;
+	if(!checkIfSameConfig(program)) return 5;
+	return 0;
 }
 
 //checks to make sure there are no duplicate IDs
