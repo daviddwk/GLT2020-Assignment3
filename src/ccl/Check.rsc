@@ -96,17 +96,17 @@ bool checkModeSetting(AbsProgram program){
         if(program.presets[h].presettype == "mode"){
             for(int i <- [0 .. size(program.presets[h].settings)]){
                 if(program.presets[h].settings[i].settype == "alarm" && !checkCustomAlarm(program, program.presets[h].settings[i].alarm)){
-                    return false; //search in presets the name of alarm
+                    return false;
                 }
                 if(program.presets[h].settings[i].settype == "heating" && (program.presets[h].settings[i].heat notin ["top","bottom","both"])){
                     return false;
                 }
-                if(program.presets[h].settings[i].settype == "temperature" && (program.presets[h].settings[i].temperature > 290 || program.presets[h].settings[i].temperature < 0)){
+                if(program.presets[h].settings[i].settype == "temperature" && (program.presets[h].settings[i].temperature > 290 || program.presets[h].settings[i].temperature < 50)){
                     return false;
                 }
-                /*if(program.presets[h].settings[i].settype == "time" && program.presets[h].settings[i].time < 0){
+                if(program.presets[h].settings[i].settype == "time" && (program.presets[h].settings[i].time < 1 || program.presets[h].settings[i].time > 65535)){
                     return false;
-                }*/
+                }
             }
         }
 	}   
@@ -118,8 +118,8 @@ bool checkAlarmSetting(AbsProgram program){
 	for(int h <- [0 .. size(program.presets)]){
 	        if(program.presets[h].presettype == "alarm"){
 	            for(int j <- [0 .. size(program.presets[h].settings)]){
-	                if(program.presets[h].settings[j].settype == "loop" && program.presets[h].settings[j].loop < 0){
-	                    return false; //max?
+	                if(program.presets[h].settings[j].settype == "loop" && (program.presets[h].settings[j].loop < 0 || program.presets[h].settings[j].loop > 255)){
+	                    return false; 
 	                }
 	                if(program.presets[h].settings[j].settype == "pattern" && size(program.presets[h].settings[j].pattern) <= 0 ){
 	                    return false;
