@@ -1,0 +1,14 @@
+alarm samplePreset {
+	volume = 10,
+	pattern = -..--.,
+	fan = true,
+	loop = 0,
+	light = false}
+
+mode samplePreset {
+	alarm = samplePreset,
+	light = true,
+	heating = both,
+	fan = false,
+	temperature = 200,
+	time = 1: 2: 3}
