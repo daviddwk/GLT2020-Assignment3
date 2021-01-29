@@ -8,7 +8,7 @@ import ovenLang::AST;
 import ParseTree;
 
 public void compile2File(str name){
-	writeFile(|project://glt2020-ccl/output/<name>.java|, compile(name, cst2ast(parse(#Program, |project://glt2020-ccl/sample/<name>.oven|))));
+	writeFile(|project://glt2020-ovenLang/output/<name>.java|, compile(name, cst2ast(parse(#Program, |project://glt2020-ovenLang/sample/<name>.oven|))));
 }
 
 public str compile(str name, AbsProgram prog){
