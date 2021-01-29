@@ -13,7 +13,7 @@ import ccl::Check;
 */
 bool checkWellformedness(loc fil) {
 	// Parsing
-	&T oven = parserCCL(fil);
+	&T oven = parser(fil);
 	// Transform the parse tree into an abstract syntax tree
 	&T ast = cst2ast(oven);
 	// Check the well-formedness of the program

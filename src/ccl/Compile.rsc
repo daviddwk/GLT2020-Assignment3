@@ -5,6 +5,7 @@ import ccl::AST;
 
 public str compile(str name, AbsProgram prog){
 	int error = check(prog);
+	// if the checker finds an error than output a java program that describes the error
 	if(error != 0){
 		return "public class <name> {
         '  public static void main(String args[]) { 
@@ -12,6 +13,7 @@ public str compile(str name, AbsProgram prog){
         '  }
   	    '}";
 	}
+	// if the checker did not find an error than output the presets
 	return "public class <name> {
     '  public static void main(String args[]) throws java.io.IOException { 
     '     new <name>().run();
