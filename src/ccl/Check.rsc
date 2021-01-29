@@ -1,6 +1,7 @@
 module ccl::Check
 
 import ccl::AST;
+import IO;
 import String;
 import List;
 import Set;
