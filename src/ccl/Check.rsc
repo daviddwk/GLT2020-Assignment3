@@ -6,7 +6,7 @@ import String;
 import List;
 import Set;
 
-public int checkCloudConfiguration(AbsProgram program){
+public int check(AbsProgram program){
 	//Runs every individial check function and returns true if there are no issues
 	if(!checkLabel(program)) return 1;
 	if(!checkSettings(program)) return 2;
