@@ -1,0 +1,14 @@
+alarm sampleAlarm {
+	volume = 10,
+	pattern = -..--.,
+	fan = true,
+	loop = 0,
+	light = false}
+
+mode sampleMode {
+	alarm = sampleAlarm,
+	light = true,
+	heating = both,
+	fan = false,
+	temperature = 200,
+	time = 20: 2: 3}
