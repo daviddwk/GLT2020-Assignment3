@@ -17,16 +17,16 @@ bool checkWellformedness(loc fil) {
 	// Transform the parse tree into an abstract syntax tree
 	&T ast = cst2ast(oven);
 	// Check the well-formedness of the program
-	return checkCloudConfiguration(ast);
+	return check(ast);
 }
 
 /*
 * This is the main function of the project. This function enables the editor's syntax highlighting.
-* After calling this function from the terminal, all files with extension .ccl will be parsed using the parser defined in module ccl::Parser.
+* After calling this function from the terminal, all files with extension .oven will be parsed using the parser defined in module ccl::Parser.
 * If there are syntactic errors in the program, no highlighting will be shown in the editor.
 */
 void main() {
-	registerLanguage("CCL - GLT", "ccl", Tree(str _, loc path) {
+	registerLanguage("ovenLang", "oven", Tree(str _, loc path) {
 		return parserCCL(path);
   	});
 }
