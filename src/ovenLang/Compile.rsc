@@ -7,7 +7,7 @@ import ovenLang::Check;
 import ovenLang::AST;
 import ParseTree;
 
-public void compileToFile(str name){
+public void compile2File(str name){
 	writeFile(|project://glt2020-ccl/output/<name>.java|, compile(name, cst2ast(parse(#Program, |project://glt2020-ccl/sample/<name>.oven|))));
 }
 
