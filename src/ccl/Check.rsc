@@ -27,7 +27,7 @@ bool checkLabel(AbsProgram program){
 	return true;
 }
 
-//checks that every MI has the correct specifications and no extras
+//checks that every Preset has the correct settings and no extras
 bool checkSettings(AbsProgram program){
 	for(int h <- [0 .. size(program.presets)]){
 		if(program.presets[h].presettype == "mode"){
@@ -94,7 +94,7 @@ bool checkSettings(AbsProgram program){
 	return true;
 }
 
-//checks that storage mi specs are set appropriately
+//checks that mode presets' settings are set appropriately
 bool checkModeSetting(AbsProgram program){
 	for(int h <- [0 .. size(program.presets)]){
         if(program.presets[h].presettype == "mode"){
@@ -117,7 +117,7 @@ bool checkModeSetting(AbsProgram program){
     return true;
 }
 
-//checks that computing mi specs are set appropriately
+//checks that alarm presets' settings are set appropriately
 bool checkAlarmSetting(AbsProgram program){
 	for(int h <- [0 .. size(program.presets)]){
 	        if(program.presets[h].presettype == "alarm"){
@@ -137,7 +137,7 @@ bool checkAlarmSetting(AbsProgram program){
     return true;
 }
 
-//checks that no mis have the exact same configuration of specifications
+//checks that no presets have the exact same configuration of specifications
 bool checkIfSameConfig(AbsProgram program){
     for(int i <- [0 .. size(program.presets)]){
         for(int j <- [0 .. size(program.presets)]){

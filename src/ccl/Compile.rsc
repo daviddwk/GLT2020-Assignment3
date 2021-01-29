@@ -3,7 +3,7 @@ module ccl::Compile
 import ccl::Check;
 import ccl::AST;
 
-public str compile(str name, AbsProgram prog) {
+public str compile(str name, AbsProgram prog){
 	int error = check(prog);
 	if(error != 0){
 		return "public class <name> {
@@ -11,16 +11,13 @@ public str compile(str name, AbsProgram prog) {
         '     <error2Java(error)>
         '  }
   	    '}";
-	} else {
-		return "public class <name> {
-        '  public static void main(String args[]) throws java.io.IOException { 
-        '     new <name>().run(new java.util.Scanner(System.in), 
-        '                    new java.io.PrintWriter(System.out));
-        '  }
-        '  <presets2consts(prog.presets)>
-        '  <prog2run(prog)>
-  	    '}";
 	}
+	return "public class <name> {
+    '  public static void main(String args[]) throws java.io.IOException { 
+    '     new <name>().run();
+    '  }
+    '  <prog2run(prog)>
+  	'}";
 }
 
 public str error2Java(int error){
@@ -39,33 +36,45 @@ public str error2Java(int error){
 		return "System.out.println(\"<errorMessage>\");";
 }
 
-public str presets2consts(list[AbsPreset] pre) {
-  i = 0;
-  return "<for (s <- pre) {>
-         'private static final int <presetsName(s)> = <i>;
-         '<i += 1;}>"; 
-}
-
 public str prog2run(AbsProgram prog) =
-         "public void run(java.util.Scanner input, java.io.Writer output) throws java.io.IOException {
-         '  int preset = <presetsName(prog.presets[0])>;
-         '  while (true) {
-         '    String token = input.nextLine();
-         '    switch (preset) {
-         '      <for (s <- prog.presets) {>
-         '      <presets2case(s)>
-         '      <}>
-         '    }
-         '  }
+         "public void run() throws java.io.IOException {
+         '	<for (s <- prog.presets) {>
+         '		<presets2case(s)>
+         '	<}>
          '}";
 
 public str presets2case(AbsPreset s) =
-         "case <presetsName(s)>: {
+         "System.out.println(\"<presetsName(s)>\");
          '  <for (a <- s.settings) {>
-         '     <a>;
-         '  <}>
-         '  break;
-         '}";
+         '		<if (a.settype == "time") {>
+         '     		System.out.println(\"<a.settype> = <a.time>\");
+         '		<}>
+                  '		<if (a.settype == "light") {>
+         '     		System.out.println(\"<a.settype> = <a.light>\");
+         '		<}>
+                  '		<if (a.settype == "heating") {>
+         '     		System.out.println(\"<a.settype> = <a.heat>\");
+         '		<}>
+                  '		<if (a.settype == "temperature") {>
+         '     		System.out.println(\"<a.settype> = <a.temperature>\");
+         '		<}>
+                  '		<if (a.settype == "fan") {>
+         '     		System.out.println(\"<a.settype> = <a.fan>\");
+         '		<}>
+                  '		<if (a.settype == "volume") {>
+         '     		System.out.println(\"<a.settype> = <a.volume>\");
+         '		<}>
+                  '		<if (a.settype == "pattern") {>
+         '     		System.out.println(\"<a.settype> = <a.pattern>\");
+         '		<}>
+                  '		<if (a.settype == "loop") {>
+         '     		System.out.println(\"<a.settype> = <a.loop>\");
+         '		<}>
+         '		<if (a.settype == "alarm") {>
+         '     		System.out.println(\"<a.settype> = <a.alarm>\");
+         '		<}>
+         '  <}>";
+         
 
 public str presetsName(AbsPreset s) = presetsName(s.id);
 public str presetsName(str s) = "presets$<s>";
