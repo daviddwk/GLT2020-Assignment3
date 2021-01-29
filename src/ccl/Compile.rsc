@@ -1,67 +1,44 @@
 module ccl::Compile
 
-import AST;
+import ccl::AST;
 
-public str compile(str name, Controller ctl) =
+public str compile(str name, AbsProgram prog) =
        "public class <name> {
        '  public static void main(String args[]) throws java.io.IOException { 
        '     new <name>().run(new java.util.Scanner(System.in), 
        '                    new java.io.PrintWriter(System.out));
        '  }
-       '  <states2consts(ctl.states)>
-       '  <controller2run(ctl)>
-       '  <for (e <- ctl.events) {>
-  	   '  <event2java(e)>
-  	   '  <}>
-  	     '  <for (c <- ctl.commands) {>
-  	     '  <command2java(c)>
-  	     '  <}>
+       '  <presets2consts(prog.presets)>
+       '  <prog2run(prog)>
   	     '}";
 
-public str states2consts(list[State] states) {
+public str presets2consts(list[AbsPreset] pre) {
   i = 0;
-  return "<for (s <- states) {>
-         'private static final int <stateName(s)> = <i>;
+  return "<for (s <- pre) {>
+         'private static final int <presetsName(s)> = <i>;
          '<i += 1;}>"; 
 }
 
-public str command2java(Command command) =
-         "private void <command.name>(java.io.Writer output) throws java.io.IOException {
-         '  output.write(\"<command.token>\\n\");
-         '  output.flush();
-         '}";
-
-public str event2java(Event event) =
-         "private boolean <event.name>(String token) {
-         '  return token.equals(\"<event.token>\");
-         '}";
-
-
-public str controller2run(Controller ctl) =
+public str prog2run(AbsProgram prog) =
          "public void run(java.util.Scanner input, java.io.Writer output) throws java.io.IOException {
-         '  int state = <stateName(ctl.states[0])>;
+         '  int preset = <presetsName(prog.presets[0])>;
          '  while (true) {
          '    String token = input.nextLine();
-         '    switch (state) {
-         '      <for (s <- ctl.states) {>
-         '      <state2case(s)>
+         '    switch (preset) {
+         '      <for (s <- prog.presets) {>
+         '      <presets2case(s)>
          '      <}>
          '    }
          '  }
          '}";
 
-public str state2case(State s) =
-         "case <stateName(s)>: {
-         '  <for (a <- s.actions) {>
+public str presets2case(AbsPreset s) =
+         "case <presetsName(s)>: {
+         '  <for (a <- s.settings) {>
          '     <a>(output);
-         '  <}>
-         '  <for (transition(e, s2) <- s.transitions) {>
-         '  if (<e>(token)) {
-         '     state = <stateName(s2)>;
-         '  }
          '  <}>
          '  break;
          '}";
 
-public str stateName(State s) = stateName(s.name);
-public str stateName(str s) = "state$<s>";
+public str presetsName(AbsPreset s) = presetsName(s.id);
+public str presetsName(str s) = "presets$<s>";

@@ -119,7 +119,6 @@ bool checkAlarmSetting(AbsProgram program){
 	        if(program.presets[h].presettype == "alarm"){
 	            for(int j <- [0 .. size(program.presets[h].settings)]){
 	                if(program.presets[h].settings[j].settype == "loop" && program.presets[h].settings[j].loop < 0){
-	                	print("loop");
 	                    return false; //max?
 	                }
 	                if(program.presets[h].settings[j].settype == "pattern" && size(program.presets[h].settings[j].pattern) <= 0 ){
